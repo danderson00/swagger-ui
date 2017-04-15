@@ -54,7 +54,8 @@ export default class Auths extends React.Component {
       return !!authorized.get(key)
     })
 
-    let nonOauthDefinitions = definitions.filter( schema => schema.get("type") !== "oauth2")
+    let easyAuthDefinitions = definitions.filter( (schema, key) => key === "EasyAuth")
+    let nonOauthDefinitions = definitions.filter( (schema, key) => schema.get("type") !== "oauth2")
     let oauthDefinitions = definitions.filter( schema => schema.get("type") === "oauth2")
 
     return (
