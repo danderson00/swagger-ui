@@ -1,7 +1,7 @@
 import React, { PropTypes } from "react"
-import { MobileServiceClient } from "azure-mobile-apps-client"
+var WindowsAzure = require("azure-mobile-apps-client")
 
-export default class EasyAuth extends React.Component {
+export class EasyAuth extends React.Component {
   static propTypes = {
     authorized: PropTypes.object,
     getComponent: PropTypes.func.isRequired,
@@ -23,6 +23,10 @@ export default class EasyAuth extends React.Component {
     }
   }
 
+  // this will ONLY work for sites with swagger-ui embedded
+  // this needs to be updated to take the applicationUrl from the swagger URL
+  client = new WindowsAzure.MobileServiceClient(window.location.origin)
+
   getValue () {
     let { name, authorized } = this.props
 
@@ -38,7 +42,11 @@ export default class EasyAuth extends React.Component {
   }
 
   login = provider => {
-
+    this.client.login(provider).then(user => {
+      console.log("Logged in with user ID " + user.userId)
+      this.onChange("Bearer " + user.mobileServiceAuthenticationToken)
+      setTimeout(() => document.getElementById('submitAuth').click())
+    })
   }
 
   render() {
@@ -46,8 +54,8 @@ export default class EasyAuth extends React.Component {
     const Row = getComponent("Row")
     const Col = getComponent("Col")
     const AuthError = getComponent("authError")
-    const Markdown = getComponent( "Markdown" )
     const JumpToPath = getComponent("JumpToPath", true)
+    const Button = getComponent("Button")
     let value = this.getValue()
     let errors = errSelectors.allErrors().filter( err => err.get("authId") === name)
 
@@ -56,26 +64,21 @@ export default class EasyAuth extends React.Component {
         <h4>Azure App Service authorization<JumpToPath path={[ "securityDefinitions", name ]} /></h4>
         { value && <h6>Authorized</h6>}
         <Row>
-          <Markdown options={{html: true, typographer: true, linkify: true, linkTarget: "_blank"}}
-                    source={ schema.get("description") } />
-        </Row>
-        <Row>
-          <p>Name: <code>{ schema.get("name") }</code></p>
-        </Row>
-        <Row>
-          <p>In: <code>{ schema.get("in") }</code></p>
+          
         </Row>
         <Row>
           <label>Log in with:</label>
-          <p>{['aad'].map(provider =>
+          <p>{
+            ['aad'].map(provider =>
               <button key={provider} onClick={() => this.login(provider)}>{provider}</button>
-          )}</p>
+            )
+          }</p>
+          <input id="submitAuth" type="submit" style={{ display: 'none' }} />
         </Row>
         {
-          errors.valueSeq().map( (error, key) => {
-            return <AuthError error={ error }
-                              key={ key }/>
-          } )
+          errors.valueSeq().map( (error, key) => 
+            <AuthError error={ error } key={ key }/> 
+          )
         }
       </div>
     )

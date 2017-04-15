@@ -1,6 +1,8 @@
 import React, { PropTypes } from "react"
 import ImPropTypes from "react-immutable-proptypes"
 
+import { EasyAuth } from "./easy-auth"
+
 export default class Auths extends React.Component {
   static propTypes = {
     definitions: PropTypes.object.isRequired,
@@ -54,7 +56,7 @@ export default class Auths extends React.Component {
       return !!authorized.get(key)
     })
 
-    let easyAuthDefinitions = definitions.filter( (schema, key) => key === "EasyAuth")
+    let easyAuthDefinition = definitions.find( (schema, key) => key === "EasyAuth")
     let nonOauthDefinitions = definitions.filter( (schema, key) => schema.get("type") !== "oauth2")
     let oauthDefinitions = definitions.filter( schema => schema.get("type") === "oauth2")
 
@@ -119,6 +121,18 @@ export default class Auths extends React.Component {
                 }
                 ).toArray()
             }
+          </div> : null
+        }
+
+        {
+          easyAuthDefinition ? <div>
+            <EasyAuth key="EasyAuth"
+              schema={ easyAuthDefinition }
+              name="EasyAuth"
+              errSelectors={ errSelectors }
+              authorized={ authorized }
+              getComponent={ getComponent }
+              onChange={ this.onAuthChange } />          
           </div> : null
         }
 
