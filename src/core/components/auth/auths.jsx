@@ -132,7 +132,8 @@ export default class Auths extends React.Component {
               errSelectors={ errSelectors }
               authorized={ authorized }
               getComponent={ getComponent }
-              onChange={ this.onAuthChange } />          
+              onChange={ this.onAuthChange } 
+              submitAuth={ this.submitAuth } />          
           </div> : null
         }
 

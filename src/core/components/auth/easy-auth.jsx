@@ -8,7 +8,8 @@ export class EasyAuth extends React.Component {
     errSelectors: PropTypes.object.isRequired,
     schema: PropTypes.object.isRequired,
     name: PropTypes.string.isRequired,
-    onChange: PropTypes.func
+    onChange: PropTypes.func.isRequired,
+    submitAuth: PropTypes.func.isRequired
   }
 
   constructor(props, context) {
@@ -45,7 +46,7 @@ export class EasyAuth extends React.Component {
     this.client.login(provider).then(user => {
       console.log("Logged in with user ID " + user.userId)
       this.onChange("Bearer " + user.mobileServiceAuthenticationToken)
-      setTimeout(() => document.getElementById('submitAuth').click())
+      this.props.submitAuth()
     })
   }
 
@@ -73,7 +74,6 @@ export class EasyAuth extends React.Component {
               <button key={provider} onClick={() => this.login(provider)}>{provider}</button>
             )
           }</p>
-          <input id="submitAuth" type="submit" style={{ display: 'none' }} />
         </Row>
         {
           errors.valueSeq().map( (error, key) => 
