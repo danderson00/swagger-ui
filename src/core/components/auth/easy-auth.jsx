@@ -1,6 +1,19 @@
 import React, { PropTypes } from "react"
 var WindowsAzure = require("azure-mobile-apps-client")
 
+import Azure from "../../../img/azure.svg"
+import Facebook from "../../../img/facebook-box.svg"
+import Google from "../../../img/google.svg"
+import Microsoft from "../../../img/microsoft.svg"
+import Twitter from "../../../img/twitter-box.svg"
+const logos = {
+  'aad': Azure,
+  'facebook': Facebook,
+  'google': Google,
+  'microsoftaccount': Microsoft,
+  'twitter': Twitter
+}
+
 export class EasyAuth extends React.Component {
   static propTypes = {
     authorized: PropTypes.object,
@@ -46,7 +59,7 @@ export class EasyAuth extends React.Component {
     this.client.login(provider).then(user => {
       console.log("Logged in with user ID " + user.userId)
       this.onChange("Bearer " + user.mobileServiceAuthenticationToken)
-      this.props.submitAuth()
+      setTimeout(() => this.props.submitAuth(new Event("")))
     })
   }
 
@@ -57,6 +70,13 @@ export class EasyAuth extends React.Component {
     const AuthError = getComponent("authError")
     const JumpToPath = getComponent("JumpToPath", true)
     const Button = getComponent("Button")
+    const styles = {
+      width: '23px',
+      height: '23px',
+      padding: '2px',
+      cursor: 'pointer'
+    }
+
     let value = this.getValue()
     let errors = errSelectors.allErrors().filter( err => err.get("authId") === name)
 
@@ -64,14 +84,15 @@ export class EasyAuth extends React.Component {
       <div>
         <h4>Azure App Service authorization<JumpToPath path={[ "securityDefinitions", name ]} /></h4>
         { value && <h6>Authorized</h6>}
+        { value && <h6>{value}</h6>}
         <Row>
           
         </Row>
         <Row>
           <label>Log in with:</label>
           <p>{
-            ['aad'].map(provider =>
-              <button key={provider} onClick={() => this.login(provider)}>{provider}</button>
+            ['aad', 'facebook', 'google', 'microsoftaccount', 'twitter'].map(provider =>
+              <img key={provider} src={logos[provider]} alt={provider} style={styles} onClick={() => this.login(provider)} />
             )
           }</p>
         </Row>
